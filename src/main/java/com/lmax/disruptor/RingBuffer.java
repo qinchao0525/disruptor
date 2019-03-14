@@ -35,7 +35,7 @@ abstract class RingBufferFields<E> extends RingBufferPad
 
     static
     {
-        final int scale = UNSAFE.arrayIndexScale(Object[].class);
+        final int scale = UNSAFE.arrayIndexScale(Object[].class);//获取数组中元素的增量地址，每个元素的增量地址，每个元素的地址增加量
         if (4 == scale)
         {
             REF_ELEMENT_SHIFT = 2;
@@ -48,13 +48,14 @@ abstract class RingBufferFields<E> extends RingBufferPad
         {
             throw new IllegalStateException("Unknown pointer size");
         }
-        BUFFER_PAD = 128 / scale;
+        BUFFER_PAD = 128 / scale;//
         // Including the buffer pad in the array base offset
         REF_ARRAY_BASE = UNSAFE.arrayBaseOffset(Object[].class) + (BUFFER_PAD << REF_ELEMENT_SHIFT);
+        //引用数组的第一个元素的偏移地址加上buffer填充的量
     }
 
     private final long indexMask;
-    private final Object[] entries;
+    private final Object[] entries;//实例数组
     protected final int bufferSize;
     protected final Sequencer sequencer;
 
@@ -69,12 +70,12 @@ abstract class RingBufferFields<E> extends RingBufferPad
         {
             throw new IllegalArgumentException("bufferSize must not be less than 1");
         }
-        if (Integer.bitCount(bufferSize) != 1)
+        if (Integer.bitCount(bufferSize) != 1)//计算int数字在二进制下的1的个数据，当1的个数为1的时候，这个整数就一定是2的幂次，在进行移动的时候可以使用移位，速度更快
         {
             throw new IllegalArgumentException("bufferSize must be a power of 2");
         }
 
-        this.indexMask = bufferSize - 1;
+        this.indexMask = bufferSize - 1;//索引模数
         this.entries = new Object[sequencer.getBufferSize() + 2 * BUFFER_PAD];
         fill(eventFactory);
     }
@@ -166,12 +167,13 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @throws IllegalArgumentException if bufferSize is less than 1 or not a power of 2
      * @see SingleProducerSequencer
      */
-    public static <E> RingBuffer<E> createSingleProducer(
-        EventFactory<E> factory,
+    public static <E> RingBuffer<E> createSingleProducer( //单生产者的ringbuffer
+        EventFactory<E> factory,//事件工厂，可以产生事件
         int bufferSize,
         WaitStrategy waitStrategy)
     {
         SingleProducerSequencer sequencer = new SingleProducerSequencer(bufferSize, waitStrategy);
+        //单生产者的序列生成器，传入等待策略和ringbuffer的大小
 
         return new RingBuffer<E>(factory, sequencer);
     }
@@ -205,7 +207,7 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     public static <E> RingBuffer<E> create(
         ProducerType producerType,
         EventFactory<E> factory,
-        int bufferSize,
+        int bufferSize,//ringbuffer的大小
         WaitStrategy waitStrategy)
     {
         switch (producerType)
@@ -403,7 +405,7 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @return A sequence barrier that will track the specified sequences.
      * @see SequenceBarrier
      */
-    public SequenceBarrier newBarrier(Sequence... sequencesToTrack)
+    public SequenceBarrier newBarrier(Sequence... sequencesToTrack)//生成新序列的屏障
     {
         return sequencer.newBarrier(sequencesToTrack);
     }

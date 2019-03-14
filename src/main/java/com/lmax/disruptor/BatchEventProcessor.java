@@ -164,8 +164,8 @@ public final class BatchEventProcessor<T>
 
                 while (nextSequence <= availableSequence)
                 {
-                    event = dataProvider.get(nextSequence);
-                    eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);
+                    event = dataProvider.get(nextSequence);//拿到事件
+                    eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);//回掉用户实现的事件处理器
                     nextSequence++;
                 }
 

@@ -95,11 +95,11 @@ public class Disruptor<T>
      */
     @Deprecated
     public Disruptor(
-        final EventFactory<T> eventFactory,
+        final EventFactory<T> eventFactory,//事件工厂，用来产生事件
         final int ringBufferSize,
         final Executor executor,
-        final ProducerType producerType,
-        final WaitStrategy waitStrategy)
+        final ProducerType producerType,//单生产者还是多生产者
+        final WaitStrategy waitStrategy)//这里的等待策略是传给ringbuffer的
     {
         this(RingBuffer.create(producerType, eventFactory, ringBufferSize, waitStrategy), executor);
     }
