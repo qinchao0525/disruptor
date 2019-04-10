@@ -21,7 +21,7 @@ import com.lmax.disruptor.util.Util;
 
 abstract class SingleProducerSequencerPad extends AbstractSequencer
 {
-    protected long p1, p2, p3, p4, p5, p6, p7; //缓存填充，填充七个long值，一般的缓存行是8*8=64个字节，一个long是8个字节
+    protected long p1, p2, p3, p4, p5, p6, p7; //缓存填充，填充七个long值，一般的缓存行是8*8=64个字节，一个long是8个字节，一个对象头是8个字节
 
     SingleProducerSequencerPad(int bufferSize, WaitStrategy waitStrategy)
     {
@@ -53,7 +53,7 @@ abstract class SingleProducerSequencerFields extends SingleProducerSequencerPad
 
 public final class SingleProducerSequencer extends SingleProducerSequencerFields
 {
-    protected long p1, p2, p3, p4, p5, p6, p7;
+    protected long p1, p2, p3, p4, p5, p6, p7;//缓存填充，七个long值，加上对象头的8个字节，刚好一个缓存行的大小，可以避免伪共享。
 
     /**
      * Construct a Sequencer with the selected wait strategy and buffer size.
